@@ -1,0 +1,6 @@
+Django==1.11.6
+mysqlclient==1.4.2
+pillow==6.0.0
+pytz==2019.1
+pytest==4.4.0
+pytest-django==3.4.8
