@@ -1,8 +1,8 @@
 from rest_framework import viewsets
 from django.contrib.auth.models import Group, User
 from api.serializers import (GroupSerializer, CategoriesSerializer, UserSignUpSerializer,
-                            LoginSerializer, SummercampSerializer, UserSerializer)
-from api.models import ActivityCategories, SummerCamp
+                            LoginSerializer, SummercampSerializer, UserSerializer, ActivitySerializer)
+from api.models import ActivityCategories, SummerCamp, SummerCampActivities
 from rest_framework import generics, mixins
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -49,12 +49,21 @@ class SummercampView(viewsets.ModelViewSet):
     serializer_class = SummercampSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated, IsOrganiser)
+    lookup_field = 'slug'
     
     def get_queryset(self):
         return self.request.user.summer_camps.all()
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+    
+    @detail_route(methods=['post'])
+    def activities(self, request, slug):
+        summer_camp = self.get_object()
+        data = ActivitySerializer(data=request.data)
+        data.is_valid(raise_exception=True)
+        data.save(summer_camp=summer_camp)
+        return Response(data.data)
 
 class InstructorsView(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -64,5 +73,6 @@ class InstructorsView(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, IsOrganiser)
 
     def get_queryset(self):
+        assigned_instructors = list(SummerCampActivities.objects.filter(is_active=True).values_list('instructor', flat=True))
         group = Group.objects.get(name='instructor')
-        return group.user_set.all()
+        return group.user_set.exclude(pk__in=assigned_instructors)

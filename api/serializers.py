@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import Group, User
 from django.contrib.auth import authenticate
-from api.models import ActivityCategories, SummerCamp
+from api.models import ActivityCategories, SummerCamp, SummerCampActivities
 from rest_framework.validators import UniqueValidator
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -61,6 +61,11 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError('User not active.')
         raise serializers.ValidationError('Invalid credentials.')
 
+class ActivitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SummerCampActivities
+        fields = '__all__'
+        read_only_fields = ('summer_camp', 'participants')
 class SummercampSerializer(serializers.ModelSerializer):
     class Meta:
         model = SummerCamp
