@@ -16,7 +16,7 @@ class UserProfile(models.Model):
     city = models.CharField(max_length = 32,default='')
     age = models.IntegerField(default=23)
     phone = models.CharField(max_length=10, validators=[MinLengthValidator(10)])
-    image = models.ImageField(upload_to='profile_images', blank=True, default='https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png')
+    image = models.ImageField(upload_to='profile_images', blank=True, default='profile_images/sample.png')
     gender = models.CharField(max_length=1, choices=GENDER)
 
     def __str__(self):

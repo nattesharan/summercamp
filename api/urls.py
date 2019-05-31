@@ -1,10 +1,12 @@
 from rest_framework import routers
 from django.conf.urls import url
-from api.views import UserGroupsView, CategoriesView, RegisterView, LoginView
+from api.views import UserGroupsView, CategoriesView, RegisterView, LoginView, SummercampView, InstructorsView
 
 router = routers.DefaultRouter()
 
 router.register(r'^groups', UserGroupsView)
+router.register(r'^camps', SummercampView)
+router.register(r'^instructors', InstructorsView)
 
 urlpatterns = router.urls
 
