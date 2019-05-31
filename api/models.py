@@ -3,6 +3,7 @@ from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.core.validators import MinLengthValidator
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.text import slugify
 # Create your models here.
 
 class UserProfile(models.Model):
@@ -10,7 +11,7 @@ class UserProfile(models.Model):
         ('M', 'Male'),
         ('F', 'Female'),
     ]
-    user = models.OneToOneField(User, related_name='profile')
+    user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE)
     description = models.CharField(max_length=256, default='')
     city = models.CharField(max_length = 32,default='')
     age = models.IntegerField(default=23)
@@ -45,3 +46,20 @@ class ActivityCategories(models.Model):
         except ObjectDoesNotExist:
             category = cls.objects.create(name=category_name)
             return category, True
+
+class SummerCamp(models.Model):
+    name = models.CharField(max_length=64, unique=True)
+    description = models.CharField(max_length=256)
+    slug = models.SlugField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='summer_camps')
+    start_date = models.DateField()
+    end_date = models.DateField()
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name, allow_unicode=True)
+        super().save(*args, **kwargs)
