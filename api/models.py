@@ -75,6 +75,7 @@ class SummerCampActivities(models.Model):
     instructor = models.ForeignKey(User, related_name='activities')
     start_time = models.TimeField()
     end_time = models.TimeField()
+    participants = models.ManyToManyField(User, related_name='my_activities')
 
     def __str__(self):
         return self.name
