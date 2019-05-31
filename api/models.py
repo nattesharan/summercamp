@@ -63,3 +63,23 @@ class SummerCamp(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name, allow_unicode=True)
         super().save(*args, **kwargs)
+
+class SummerCampActivities(models.Model):
+    name = models.CharField(max_length=64)
+    description = models.CharField(max_length=256)
+    slug = models.SlugField(null=True, blank=True)
+    summer_camp = models.ForeignKey(SummerCamp, on_delete=models.CASCADE, related_name='camp_activities')
+    category = models.ForeignKey(ActivityCategories, related_name='activities')
+    is_active = models.BooleanField(default=True)
+    created = models.DateTimeField(auto_now_add=True)
+    instructor = models.ForeignKey(User, related_name='activities')
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+
+    def __str__(self):
+        return self.name
+    
+    def save(self, *args, **kwargs):
+        name = self.name + '-' + self.summer_camp.name
+        self.slug = slugify(name, allow_unicode=True)
+        super().save(*args, **kwargs)
