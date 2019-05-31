@@ -99,3 +99,26 @@ class UserSummerCampView(viewsets.ModelViewSet):
                 return Response({'status': False, 'message': 'Invalid activity selected.'}, status=400)
         return Response({'status': True, 'message': 'Successfully added user to summercamp'})
 
+class DashboardView(viewsets.ModelViewSet):
+    serializer_class = ActivitySerializer
+    queryset = SummerCampActivities.objects.all()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    http_method_names = ['get']
+
+    def get_serializer_class(self):
+        user = self.request.user
+        role = user.groups.first().name
+        if role in ['student','instructor']:
+            return self.serializer_class
+        return SummercampSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        role = user.groups.first().name
+        if role == 'student':
+            return user.my_activities.all()
+        elif role == 'organiser':
+            return user.summer_camps.all()
+        else:
+            return user.activities.all()
