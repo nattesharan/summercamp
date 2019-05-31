@@ -10,7 +10,8 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth import login
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from api.permissions import IsOrganiser
+from api.permissions import IsOrganiser, IsStudent
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.decorators import detail_route
 
 # Create your views here.
@@ -76,3 +77,25 @@ class InstructorsView(viewsets.ModelViewSet):
         assigned_instructors = list(SummerCampActivities.objects.filter(is_active=True).values_list('instructor', flat=True))
         group = Group.objects.get(name='instructor')
         return group.user_set.exclude(pk__in=assigned_instructors)
+
+
+class UserSummerCampView(viewsets.ModelViewSet):
+    queryset = SummerCamp.objects.all()
+    serializer_class = SummercampSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, IsStudent)
+    http_method_names = ['get', 'post']
+
+    @detail_route(methods=['post'])
+    def join(self, request, pk):
+        summer_camp = self.get_object()
+        if 'activities' not in request.data or not request.data['activities']:
+            return Response({'status': False, 'message': 'Please select activities to participate.'}, status=400)
+        for activity_id in request.data['activities']:
+            try:
+                summer_camp_activity = summer_camp.camp_activities.get(pk=activity_id)
+                summer_camp_activity.participants.add(request.user)
+            except ObjectDoesNotExist:
+                return Response({'status': False, 'message': 'Invalid activity selected.'}, status=400)
+        return Response({'status': True, 'message': 'Successfully added user to summercamp'})
+

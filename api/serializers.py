@@ -66,10 +66,23 @@ class ActivitySerializer(serializers.ModelSerializer):
         model = SummerCampActivities
         fields = '__all__'
         read_only_fields = ('summer_camp', 'participants')
+
 class SummercampSerializer(serializers.ModelSerializer):
+    camp_activities = ActivitySerializer(many=True, required=False)
     class Meta:
         model = SummerCamp
-        fields = '__all__'
+        fields = (
+            'id',
+            'name',
+            'description',
+            'slug',
+            'is_active',
+            'start_date',
+            'end_date',
+            'created',
+            'owner',
+            'camp_activities'
+        )
         read_only_fields = ('owner',)
 
 class UserSerializer(serializers.ModelSerializer):

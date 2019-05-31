@@ -1,13 +1,14 @@
 from rest_framework import routers
 from django.conf.urls import url
-from api.views import UserGroupsView, CategoriesView, RegisterView, LoginView, SummercampView, InstructorsView
+from api.views import (UserGroupsView, CategoriesView, RegisterView, LoginView, 
+                        SummercampView, InstructorsView, UserSummerCampView)
 
 router = routers.DefaultRouter()
 
 router.register(r'^groups', UserGroupsView)
 router.register(r'^camps', SummercampView)
 router.register(r'^instructors', InstructorsView)
-
+router.register(r'^summercamps', UserSummerCampView)
 urlpatterns = router.urls
 
 urlpatterns += [
