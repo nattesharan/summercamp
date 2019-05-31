@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import Group, User
+from django.contrib.auth import authenticate
 from api.models import ActivityCategories
 from rest_framework.validators import UniqueValidator
 
@@ -47,3 +48,15 @@ class UserSignUpSerializer(serializers.Serializer):
         except Exception as E:
             return False, str(E)
 
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+
+    def validate(self, data):
+        user = authenticate(username=data.get('username'), password=data.get('password'))
+        if user:
+            if user.is_active:
+                data['user'] = user
+                return data
+            raise serializers.ValidationError('User not active.')
+        raise serializers.ValidationError('Invalid credentials.')
