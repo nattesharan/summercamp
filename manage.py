@@ -20,3 +20,7 @@ if __name__ == "__main__":
             )
         raise
     execute_from_command_line(sys.argv)
+
+# gunicorn summercamp.wsgi:application --preload --workers=3 --log-level=debug --bind=0.0.0.0:3000
+# for deploy in prod add whitenoise for serving static files but not usually recommended will update when i find better
+# solution for serving staticfiles with gunicorn and django
