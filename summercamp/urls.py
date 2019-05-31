@@ -16,9 +16,12 @@ Including another URLconf
 from django.conf.urls import url, include, static
 from django.conf import settings
 from django.contrib import admin
+from rest_framework_swagger.views import get_swagger_view
+schema_view = get_swagger_view(title='API')
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^account/', include('accounts.urls', namespace='accounts')),
-    url(r'^api/v1/', include(('api.urls','api'), namespace='api_v1'))
+    url(r'^api/v1/', include(('api.urls','api'), namespace='api_v1')),
+    url(r'^api/docs/', schema_view)
 ] + static.static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
