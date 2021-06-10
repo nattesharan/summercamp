@@ -1,4 +1,4 @@
-Django==1.11.6
+Django==2.2.24
 djangorestframework==3.9.2
 django-rest-swagger==2.2.0
 mysqlclient==1.4.2
